@@ -1,0 +1,55 @@
+instalar estos programas 
+-composer (gestor de paquetes como npm de node para instalar los paquetes de php)
+-xampp
+-node.js
+
+ejecutamos los siguientes comandos para instalar laravel (tener iniciado apache y mysql d xampp o wl servidor)
+
+	composer global require laravel/installer (para instalar laravel de manera global)
+	
+Luego se crea una carpeta para poder crear un proyecto con laravel
+
+	en la ruta del proyecto ejecutamos en la consola 
+
+	composer create-project laravel/laravel NOMBRE-PROYECTO
+
+	cd NOMBRE-PROYECTO
+
+	php artisan serve
+
+vamos a el archivo .env (configurar la conexion de  db) modificar los parametros 
+DB_DATABASE= NOMBRE_DE_LA_BD
+
+
+para crear una tabla en la bd ejecutamos el siguiente comando en consola 
+php artisan make:model NOMBRE_TABLA -m    (-m significa model)
+podemos ir luego a app/Models/NOMBRE_TABLA   (aqui se encuentra el esquema de la tabla)
+
+para agregar mas campos a la tabla creada vamos a app/database/archivo_de_tabla_creada luego abrimos 
+en el schema podemos agregar mas campos de la siguiente forma
+	$table->string('campo_nuevo')
+
+luego en consola migramos las tablas a  la db con el siguiente comando (es la forma de crear db con laravel o la podemos crear directamente en el gestor de db)
+	php artisan migrate
+
+
+	
+
+para poder traer solo ciertos campos de la tabla con laravel vamos a app/models/TABLA.php
+dentro de la clase indicamos con que campos vamos a trabajar en nuestro modelo 
+	protected $fillable = ['campo1','campo2'...];
+
+
+
+
+Para agregar un controlador a nuestro modelo_tabla ejecutar el comando 
+	php artisan make:controller NOMBRE_CONTROLADOR
+
+luego ir a app/Http/Controllers/NOMBRE_CONTROLADOR
+y crear los metodos necesarios para traer la informacion que se requiera
+
+
+Para manejar las rutas ir a app/routes/api.php
+y crear las rutas de  api de la siguiente forma 
+	Route::get('RUTA','App\Http\Controllers\CONTROLADOR@FUNCION_CONTROLADOR');
+
