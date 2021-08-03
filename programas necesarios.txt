@@ -22,10 +22,11 @@ DB_DATABASE= NOMBRE_DE_LA_BD
 
 
 para crear una tabla en la bd ejecutamos el siguiente comando en consola 
+Los models es recomendado crearlos con la primera letra en mayuscula
 php artisan make:model NOMBRE_TABLA -m    (-m significa model)
 podemos ir luego a app/Models/NOMBRE_TABLA   (aqui se encuentra el esquema de la tabla)
 
-para agregar mas campos a la tabla creada vamos a app/database/archivo_de_tabla_creada luego abrimos 
+para agregar mas campos a la tabla creada vamos a database/archivo_de_tabla_creada luego abrimos 
 en el schema podemos agregar mas campos de la siguiente forma
 	$table->string('campo_nuevo')
 
@@ -37,6 +38,7 @@ luego en consola migramos las tablas a  la db con el siguiente comando (es la fo
 
 para poder traer solo ciertos campos de la tabla con laravel vamos a app/models/TABLA.php
 dentro de la clase indicamos con que campos vamos a trabajar en nuestro modelo 
+	public $timestamps = false; // para que no nos traiga las fechas de creacion ni de actualizacion
 	protected $fillable = ['campo1','campo2'...];
 
 
@@ -46,10 +48,61 @@ Para agregar un controlador a nuestro modelo_tabla ejecutar el comando
 	php artisan make:controller NOMBRE_CONTROLADOR
 
 luego ir a app/Http/Controllers/NOMBRE_CONTROLADOR
-y crear los metodos necesarios para traer la informacion que se requiera
+y crear los metodos necesarios para traer la informacion que se requiera dentro del modelo se genera ejemplo
+	use App\Models\categoria; //importamos nuestro modelo app debe ir con mayusculas(OJO)
+
+	public function getCategoria() // traer todos los registros 
+    {
+		// $categorias = categoria::where('cat_nom', '=', 'postman')->get(); // esta es la forma de devolver todos los registros que coincidan con un where
+        return response()->json(categoria::all(), 200);
+    }
+
+    public function getCategoriaId($id) //buscar de un solo registro
+    {
+        $categoria = categoria::find($id);
+
+        if (is_null($categoria)) {
+            return response()->json(['Mensaje' => 'Registro no encontrado'], 404);
+        } else {
+            return response()->json($categoria::find($id), 200);
+        }
+    }
+
+    public function insertCategoria(Request $request) //crear un nuevo registro
+    {
+        $categoria = categoria::create($request->all());
+        return response()->json($categoria, 200);
+    }
+
+    public function updateCategoria($id, Request $request) // update de registro
+    {
+        $categoria = categoria::find($id);
+        if (is_null($categoria)) {
+            return response()->json(['Mensaje' => 'Registro no encontrado'], 404);
+        } else {
+            $categoria->update($request->all());
+            return response($categoria, 200);
+        }
+    }
+
+    public function deleteCategoria($id) //eliminar un registro se recomiendo solo actualizar un status
+    {
+        $categoria = categoria::find($id);
+        if (is_null($categoria)) {
+            return response()->json(['Mensaje' => 'Registro no encontrado'], 404);
+        } else {
+            $categoria->delete();
+            return response()->json(['Mensaje' => 'Registro Eliminado'], 200);
+        }
+    }
 
 
 Para manejar las rutas ir a app/routes/api.php
 y crear las rutas de  api de la siguiente forma 
-	Route::get('RUTA','App\Http\Controllers\CONTROLADOR@FUNCION_CONTROLADOR');
+(las rutas se crean con slash invertido \ OJO y OJO que app debe ir la primera letra en mayusculas, cuidado con las carpetas ya previamente creadas respetar las mayusculas)
+	Route::get('categoria', 'App\Http\Controllers\categoriaController@getCategoria');
+	Route::get('categoria/{id}', 'App\Http\Controllers\categoriaController@getCategoriaId');
+	Route::post('categoria/insert', 'App\Http\Controllers\categoriaController@insertCategoria');
+	Route::put('categoria/update/{id}', 'App\Http\Controllers\categoriaController@updateCategoria');
+	Route::delete('categoria/delete/{id}', 'App\Http\Controllers\categoriaController@deleteCategoria');
 
